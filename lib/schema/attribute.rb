@@ -238,30 +238,29 @@ module Schema
     end
 
     def check_plugins
-      attribute_options = self.class.options.keys
+      options = self.class.options
+      attribute_options = options.keys
       self.class.plugins.each do |plugin|
         plugin_options = plugin.options.keys
         if plugin_options.any? && (plugin_options & attribute_options).empty?
-          # Skip if the plugin has any options, but none are on this attribute
+          # Skip if this attribute has none of the plugin's options set,
+          # including default values
           next
         end
 
         plugin.checks.each do |check|
-          # Skip next plugins if one plugin made the attribute invisible
+          # Skip next plugin checks if a plugin already made the attribute
+          # invisible
           break unless visible?
 
-          options = {}
+          check_options = {}
           if check.arity > 1
             _, *params = check.parameters
             params.map do |(type, param)|
-              options[param] = self.class.options[param] if type == :keyreq
+              check_options[param] = options[param] if type == :keyreq
             end
           end
-          if options.any?
-            check.call(self, **options)
-          else
-            check.call(self)
-          end
+          check.call(self, **check_options)
         end
       end
     end

@@ -214,6 +214,33 @@ RSpec.describe Schema::Definition do
         expect(name_field.value).to eq("Tom")
         expect(name_field.issues).to have_note("From plugin 1")
       end
+
+      it "passes options to plugin checks" do
+        plugin1 =
+          plugin_dsl do
+            option :plug_option, :default_value => :something
+            check { |field, plug_option:| field.add_note "plug_option: #{plug_option}" }
+          end
+        d =
+          class_dsl do
+            plugin plugin1
+
+            attribute :id, :plug_option => 1
+            attribute :name
+          end
+
+        result = d.new(
+          :id => 123,
+          :name => "Tom"
+        )
+        result.check!
+
+        id_field = result[:id]
+        expect(id_field.class.plugins).to contain_exactly(plugin1)
+        expect(id_field.class.options).to include(:plug_option => 1)
+        expect(id_field.value).to eq(123)
+        expect(id_field.issues).to have_note("plug_option: 1")
+      end
     end
 
     it "parses fields with class attributes" do
