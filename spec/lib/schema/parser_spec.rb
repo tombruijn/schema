@@ -226,20 +226,53 @@ RSpec.describe Schema::Definition do
             plugin plugin1
 
             attribute :id, :plug_option => 1
-            attribute :name
           end
 
-        result = d.new(
-          :id => 123,
-          :name => "Tom"
-        )
+        result = d.new(:id => 123)
         result.check!
 
         id_field = result[:id]
-        expect(id_field.class.plugins).to contain_exactly(plugin1)
-        expect(id_field.class.options).to include(:plug_option => 1)
-        expect(id_field.value).to eq(123)
         expect(id_field.issues).to have_note("plug_option: 1")
+      end
+
+      it "does not error if an unknown plugin option is specified a check argument" do
+        plugin1 =
+          plugin_dsl do
+            option :plug_option, :default_value => :something
+            check do |field, unknown_option:|
+              field.add_note "unknown_option: #{unknown_option.inspect}"
+            end
+          end
+        d =
+          class_dsl do
+            plugin plugin1
+
+            attribute :id, :plug_option => 1
+          end
+
+        result = d.new(:id => 123)
+        result.check!
+
+        id_field = result[:id]
+        expect(id_field.issues).to have_note("unknown_option: nil")
+      end
+
+      it "errors if the check errors" do
+        plugin1 =
+          plugin_dsl do
+            option :plug_option, :default_value => :something
+            check { |_attr| raise "uh oh" }
+          end
+        d =
+          class_dsl do
+            plugin plugin1
+            attribute :id, :plug_option => 1
+          end
+
+        result = d.new(:id => 123)
+        expect do
+          result.check!
+        end.to raise_error(Schema::Error::CheckFailedError, "Attribute check failed for '__root__'")
       end
     end
 

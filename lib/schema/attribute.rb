@@ -82,13 +82,13 @@ module Schema
       end
     end
 
-    ROOT_PATH = nil
+    ROOT_PATH = []
 
     attr_reader :path, :value, :attributes
     attr_writer :visible
 
     def initialize(values = {}, path = ROOT_PATH)
-      @path = path if path != ROOT_PATH
+      @path = path
       @attributes = {}
       @visible = true
       @value = values
@@ -100,6 +100,10 @@ module Schema
           set_attribute([*path, attr], value)
         end
       end
+    end
+
+    def root?
+      path == ROOT_PATH
     end
 
     def check!
