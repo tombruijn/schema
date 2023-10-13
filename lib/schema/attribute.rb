@@ -260,7 +260,7 @@ module Schema
           check_options = {}
           if check.arity > 1
             _, *params = check.parameters
-            params.map do |(type, param)|
+            params.each do |(type, param)|
               check_options[param] = options[param] if type == :keyreq
             end
           end
