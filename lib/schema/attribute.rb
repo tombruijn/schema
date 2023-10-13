@@ -138,11 +138,6 @@ module Schema
       attributes[key]
     end
 
-    # TODO: remove?
-    def []=(key, value)
-      set_attribute(key, value)
-    end
-
     def issues
       @issues ||= []
     end
@@ -213,20 +208,12 @@ module Schema
       deconstructed
     end
 
-    protected
-
-    attr_writer :value
-
     private
 
     def set_attribute(name, value)
       attr_name = Array(name).last
       definition = self.class.attributes.fetch(attr_name, UnknownAttribute)
-      if attributes.key?(attr_name)
-        attributes[attr_name].value = value
-      else
-        attributes[attr_name] = definition.new(value, name)
-      end
+      attributes[attr_name] = definition.new(value, name)
     end
 
     def check_if_visible
