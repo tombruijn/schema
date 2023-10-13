@@ -6,7 +6,7 @@ Work in progress Schema definition DSL gem.
 
 ```ruby
 class MyOtherSchema < Schema::Definition
-  attribute :other_field
+  attribute :other_attribute
 end
 
 class MySchema < Schema::Definition

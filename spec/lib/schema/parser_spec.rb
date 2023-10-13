@@ -7,17 +7,17 @@ RSpec.describe Schema::Definition do
         class_dsl do
           attribute :symbol_key do
             check do |attr|
-              attr.add_error "My symbol field error"
+              attr.add_error "My symbol attribute error"
             end
           end
           attribute "string_definition_key" do
             check do |attr|
-              attr.add_error "My string field error"
+              attr.add_error "My string attribute error"
             end
           end
           attribute :string_value_key do
             check do |attr|
-              attr.add_error "My string field error"
+              attr.add_error "My string attribute error"
             end
           end
         end
@@ -30,29 +30,29 @@ RSpec.describe Schema::Definition do
       result.check!
       expect(result.valid?).to be(false)
 
-      symbol_field = result[:symbol_key]
-      expect(symbol_field.name).to eq(:symbol_key)
-      expect(symbol_field.full_path).to eq("symbol_key")
-      expect(symbol_field.value).to eq("symbol value")
-      expect(symbol_field.valid?).to be(false)
-      expect(symbol_field.issues).to have_error("My symbol field error")
+      symbol_attr = result[:symbol_key]
+      expect(symbol_attr.name).to eq(:symbol_key)
+      expect(symbol_attr.full_path).to eq("symbol_key")
+      expect(symbol_attr.value).to eq("symbol value")
+      expect(symbol_attr.valid?).to be(false)
+      expect(symbol_attr.issues).to have_error("My symbol attribute error")
 
-      string_definition_field = result[:string_definition_key]
-      expect(string_definition_field.name).to eq(:string_definition_key)
-      expect(string_definition_field.full_path).to eq("string_definition_key")
-      expect(string_definition_field.value).to eq("string value")
-      expect(string_definition_field.valid?).to be(false)
-      expect(string_definition_field.issues).to have_error("My string field error")
+      string_definition_attr = result[:string_definition_key]
+      expect(string_definition_attr.name).to eq(:string_definition_key)
+      expect(string_definition_attr.full_path).to eq("string_definition_key")
+      expect(string_definition_attr.value).to eq("string value")
+      expect(string_definition_attr.valid?).to be(false)
+      expect(string_definition_attr.issues).to have_error("My string attribute error")
 
-      string_value_field = result[:string_value_key]
-      expect(string_value_field.name).to eq(:string_value_key)
-      expect(string_value_field.full_path).to eq("string_value_key")
-      expect(string_value_field.value).to eq("string value")
-      expect(string_value_field.valid?).to be(false)
-      expect(string_value_field.issues).to have_error("My string field error")
+      string_value_attr = result[:string_value_key]
+      expect(string_value_attr.name).to eq(:string_value_key)
+      expect(string_value_attr.full_path).to eq("string_value_key")
+      expect(string_value_attr.value).to eq("string value")
+      expect(string_value_attr.valid?).to be(false)
+      expect(string_value_attr.issues).to have_error("My string attribute error")
     end
 
-    it "parses unknown fields" do
+    it "parses unknown attribute" do
       d = class_dsl { attribute :symbol_key }
 
       result = d.new(
@@ -67,10 +67,10 @@ RSpec.describe Schema::Definition do
 
       expect(result[:symbol_key]).to_not be_nil
 
-      unknown_field = result[:unknown_key]
-      expect(unknown_field.value).to eq("some value")
-      expect(unknown_field.valid?).to be(true)
-      expect(unknown_field.unknown?).to be(true)
+      unknown_attr = result[:unknown_key]
+      expect(unknown_attr.value).to eq("some value")
+      expect(unknown_attr.valid?).to be(true)
+      expect(unknown_attr.unknown?).to be(true)
 
       unknown_section = result[:unknown_section]
       expect(unknown_section.value).to eq(
@@ -85,12 +85,12 @@ RSpec.describe Schema::Definition do
       d =
         class_dsl do
           attribute :test do
-            check do |field|
-              hello(field)
+            check do |attr|
+              hello(attr)
             end
 
-            def hello(field)
-              field.add_note "hello"
+            def hello(attr)
+              attr.add_note "hello"
             end
           end
         end
@@ -121,33 +121,33 @@ RSpec.describe Schema::Definition do
       )
       result.check!
 
-      root_field = result[:root_level_key]
-      expect(root_field.name).to eq(:root_level_key)
-      expect(root_field.full_path).to eq("root_level_key")
-      expect(root_field.value).to eq(
+      root_attr = result[:root_level_key]
+      expect(root_attr.name).to eq(:root_level_key)
+      expect(root_attr.full_path).to eq("root_level_key")
+      expect(root_attr.value).to eq(
         :second_level_key => {
           :third_level_key1 => "value 1",
           :third_level_key2 => "value 2"
         }
       )
 
-      second_level_field = root_field[:second_level_key]
-      expect(second_level_field.name).to eq(:second_level_key)
-      expect(second_level_field.full_path).to eq("root_level_key.second_level_key")
-      expect(second_level_field.value).to eq(
+      second_level_attr = root_attr[:second_level_key]
+      expect(second_level_attr.name).to eq(:second_level_key)
+      expect(second_level_attr.full_path).to eq("root_level_key.second_level_key")
+      expect(second_level_attr.value).to eq(
         :third_level_key1 => "value 1",
         :third_level_key2 => "value 2"
       )
 
-      third_level_field1 = second_level_field[:third_level_key1]
-      expect(third_level_field1.name).to eq(:third_level_key1)
-      expect(third_level_field1.full_path).to eq("root_level_key.second_level_key.third_level_key1")
-      expect(third_level_field1.value).to eq("value 1")
+      third_level_attr = second_level_attr[:third_level_key1]
+      expect(third_level_attr.name).to eq(:third_level_key1)
+      expect(third_level_attr.full_path).to eq("root_level_key.second_level_key.third_level_key1")
+      expect(third_level_attr.value).to eq("value 1")
 
-      third_level_field2 = second_level_field[:third_level_key2]
-      expect(third_level_field2.name).to eq(:third_level_key2)
-      expect(third_level_field2.full_path).to eq("root_level_key.second_level_key.third_level_key2")
-      expect(third_level_field2.value).to eq("value 2")
+      third_level_attr = second_level_attr[:third_level_key2]
+      expect(third_level_attr.name).to eq(:third_level_key2)
+      expect(third_level_attr.full_path).to eq("root_level_key.second_level_key.third_level_key2")
+      expect(third_level_attr.value).to eq("value 2")
     end
 
     describe "plugins" do
@@ -155,7 +155,7 @@ RSpec.describe Schema::Definition do
         plugin1 =
           plugin_dsl do
             option :plug_option
-            check { |field| field.add_note "From plugin 1" }
+            check { |attr| attr.add_note "From plugin 1" }
           end
         d =
           class_dsl do
@@ -171,22 +171,22 @@ RSpec.describe Schema::Definition do
         )
         result.check!
 
-        id_field = result[:id]
-        expect(id_field.class.plugins).to contain_exactly(plugin1)
-        expect(id_field.class.options).to include(:plug_option => 1)
-        expect(id_field.issues).to have_note("From plugin 1")
+        id_attr = result[:id]
+        expect(id_attr.class.plugins).to contain_exactly(plugin1)
+        expect(id_attr.class.options).to include(:plug_option => 1)
+        expect(id_attr.issues).to have_note("From plugin 1")
 
-        name_field = result[:name]
-        expect(name_field.class.plugins).to contain_exactly(plugin1)
-        expect(name_field.class.options).to be_empty
-        expect(name_field.issues).to be_empty
+        name_attr = result[:name]
+        expect(name_attr.class.plugins).to contain_exactly(plugin1)
+        expect(name_attr.class.options).to be_empty
+        expect(name_attr.issues).to be_empty
       end
 
       it "runs plugin checks on all attributes when plugin has default option value" do
         plugin1 =
           plugin_dsl do
             option :plug_option, :default_value => :something
-            check { |field| field.add_note "From plugin 1" }
+            check { |attr| attr.add_note "From plugin 1" }
           end
         d =
           class_dsl do
@@ -202,24 +202,24 @@ RSpec.describe Schema::Definition do
         )
         result.check!
 
-        id_field = result[:id]
-        expect(id_field.class.plugins).to contain_exactly(plugin1)
-        expect(id_field.class.options).to include(:plug_option => 1)
-        expect(id_field.value).to eq(123)
-        expect(id_field.issues).to have_note("From plugin 1")
+        id_attr = result[:id]
+        expect(id_attr.class.plugins).to contain_exactly(plugin1)
+        expect(id_attr.class.options).to include(:plug_option => 1)
+        expect(id_attr.value).to eq(123)
+        expect(id_attr.issues).to have_note("From plugin 1")
 
-        name_field = result[:name]
-        expect(name_field.class.plugins).to contain_exactly(plugin1)
-        expect(name_field.class.options).to include(:plug_option => :something)
-        expect(name_field.value).to eq("Tom")
-        expect(name_field.issues).to have_note("From plugin 1")
+        name_attr = result[:name]
+        expect(name_attr.class.plugins).to contain_exactly(plugin1)
+        expect(name_attr.class.options).to include(:plug_option => :something)
+        expect(name_attr.value).to eq("Tom")
+        expect(name_attr.issues).to have_note("From plugin 1")
       end
 
       it "passes options to plugin checks" do
         plugin1 =
           plugin_dsl do
             option :plug_option, :default_value => :something
-            check { |field, plug_option:| field.add_note "plug_option: #{plug_option}" }
+            check { |attr, plug_option:| attr.add_note "plug_option: #{plug_option}" }
           end
         d =
           class_dsl do
@@ -231,16 +231,16 @@ RSpec.describe Schema::Definition do
         result = d.new(:id => 123)
         result.check!
 
-        id_field = result[:id]
-        expect(id_field.issues).to have_note("plug_option: 1")
+        id_attr = result[:id]
+        expect(id_attr.issues).to have_note("plug_option: 1")
       end
 
       it "does not error if an unknown plugin option is specified a check argument" do
         plugin1 =
           plugin_dsl do
             option :plug_option, :default_value => :something
-            check do |field, unknown_option:|
-              field.add_note "unknown_option: #{unknown_option.inspect}"
+            check do |attr, unknown_option:|
+              attr.add_note "unknown_option: #{unknown_option.inspect}"
             end
           end
         d =
@@ -253,8 +253,8 @@ RSpec.describe Schema::Definition do
         result = d.new(:id => 123)
         result.check!
 
-        id_field = result[:id]
-        expect(id_field.issues).to have_note("unknown_option: nil")
+        id_attr = result[:id]
+        expect(id_attr.issues).to have_note("unknown_option: nil")
       end
 
       it "errors if the check errors" do
@@ -276,16 +276,16 @@ RSpec.describe Schema::Definition do
       end
     end
 
-    it "parses fields with class attributes" do
+    it "parses attributes with class attributes" do
       plugin1 =
         plugin_dsl do
           option :plug_option1
-          check { |field| field.add_note "From plugin 1" }
+          check { |attr| attr.add_note "From plugin 1" }
         end
       plugin2 =
         plugin_dsl do
           option :plug_option2
-          check { |field| field.add_note "From plugin 2" }
+          check { |attr| attr.add_note "From plugin 2" }
         end
       address_definition =
         class_dsl do
@@ -318,41 +318,41 @@ RSpec.describe Schema::Definition do
       )
       result.check!
 
-      id_field = result[:id]
-      expect(id_field.class.plugins).to contain_exactly(plugin1)
-      expect(id_field.class.options).to include(:plug_option1 => 1)
-      expect(id_field.value).to eq(123)
-      expect(id_field.issues).to have_note("From plugin 1")
+      id_attr = result[:id]
+      expect(id_attr.class.plugins).to contain_exactly(plugin1)
+      expect(id_attr.class.options).to include(:plug_option1 => 1)
+      expect(id_attr.value).to eq(123)
+      expect(id_attr.issues).to have_note("From plugin 1")
 
-      address_field = result[:address]
-      expect(address_field.class.plugins).to contain_exactly(plugin2)
-      expect(address_field.class.options).to include(:plug_option2 => 2)
-      expect(address_field.value).to eq(:street_name => "Teststreet", :number => 101)
-      expect(address_field.issues).to have_note("From plugin 2")
+      address_attr = result[:address]
+      expect(address_attr.class.plugins).to contain_exactly(plugin2)
+      expect(address_attr.class.options).to include(:plug_option2 => 2)
+      expect(address_attr.value).to eq(:street_name => "Teststreet", :number => 101)
+      expect(address_attr.issues).to have_note("From plugin 2")
 
-      street_name_field = address_field[:street_name]
-      expect(street_name_field.class.plugins).to contain_exactly(plugin2)
-      expect(street_name_field.class.options).to be_empty
-      expect(street_name_field.value).to eq("Teststreet")
-      expect(street_name_field.issues).to be_empty
+      street_name_attr = address_attr[:street_name]
+      expect(street_name_attr.class.plugins).to contain_exactly(plugin2)
+      expect(street_name_attr.class.options).to be_empty
+      expect(street_name_attr.value).to eq("Teststreet")
+      expect(street_name_attr.issues).to be_empty
 
-      house_number_field = address_field[:number]
-      expect(house_number_field.class.plugins).to contain_exactly(plugin2)
-      expect(house_number_field.class.options).to include(:plug_option2 => 3)
-      expect(house_number_field.value).to eq(101)
-      expect(house_number_field.issues).to have_note("From plugin 2")
+      house_number_attr = address_attr[:number]
+      expect(house_number_attr.class.plugins).to contain_exactly(plugin2)
+      expect(house_number_attr.class.options).to include(:plug_option2 => 3)
+      expect(house_number_attr.value).to eq(101)
+      expect(house_number_attr.issues).to have_note("From plugin 2")
 
-      socials_field = result[:socials]
-      expect(socials_field.class.plugins).to be_empty
-      expect(socials_field.class.options).to be_empty
-      expect(socials_field.value).to eq(:github => "tombruijn")
-      expect(socials_field.issues).to be_empty
+      socials_attr = result[:socials]
+      expect(socials_attr.class.plugins).to be_empty
+      expect(socials_attr.class.options).to be_empty
+      expect(socials_attr.value).to eq(:github => "tombruijn")
+      expect(socials_attr.issues).to be_empty
 
-      github_field = socials_field[:github]
-      expect(github_field.class.plugins).to be_empty
-      expect(github_field.class.options).to be_empty
-      expect(github_field.value).to eq("tombruijn")
-      expect(github_field.issues).to be_empty
+      github_attr = socials_attr[:github]
+      expect(github_attr.class.plugins).to be_empty
+      expect(github_attr.class.options).to be_empty
+      expect(github_attr.value).to eq("tombruijn")
+      expect(github_attr.issues).to be_empty
     end
 
     it "pattern matches" do

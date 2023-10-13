@@ -8,13 +8,13 @@ module Schema
       option :required_message,
         :default_value => "Required value for '%<full_path>s' is not set."
 
-      check do |attribute, required:, required_message:|
+      check do |attr, required:, required_message:|
         next unless required
-        next if attribute.attributes?
-        next unless attribute.value.nil?
+        next if attr.attr?
+        next unless attr.value.nil?
 
-        field.add_error(
-          format(required_message, :full_path => attribute.full_path)
+        attr.add_error(
+          format(required_message, :full_path => attr.full_path)
         )
       end
     end
