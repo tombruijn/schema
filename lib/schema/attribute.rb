@@ -22,6 +22,7 @@ module Schema
 
           extend plug.class_dsl
           include plug.instance_dsl
+          include plug.helpers_dsl if plug.helpers?
 
           # Import default config options from plugins
           plug.options.each do |option, config|
@@ -240,11 +241,12 @@ module Schema
         end
 
         plugin.checks.each do |check|
-          # Skip next plugin checks if a plugin already made the attribute
+          # Skip the next plugin checks if a plugin already made the attribute
           # invisible
           break unless visible?
 
           check_options = {}
+          # Only pass check argument if the block accepts them
           if check.arity > 1
             _, *params = check.parameters
             params.each do |(type, param)|

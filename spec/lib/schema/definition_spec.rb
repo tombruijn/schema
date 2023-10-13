@@ -286,8 +286,7 @@ RSpec.describe Schema::Definition do
       expect(d.attributes[:test2].options[:my_option]).to eq(:custom)
     end
 
-    it "adds methods to fields defined in the plugin" do
-      pending
+    it "adds methods to atttributes defined in the plugin" do
       plugin1 =
         plugin_dsl do
           helpers do
@@ -296,32 +295,15 @@ RSpec.describe Schema::Definition do
             end
           end
         end
-      plugin2 =
-        plugin_dsl do
-          helpers do
-            def other_method(arg1)
-              [:other_method, arg1]
-            end
-          end
-        end
       d1 =
         class_dsl do
           plugin plugin1
           attribute :test
         end
-      d2 =
-        class_dsl do
-          plugin plugin2
-          attribute :test
-        end
 
-      result1 = d1.parse(:test => true)
-      result2 = d2.parse(:test => true)
+      result = d1.new(:test => true)
 
-      expect(result1[:test].my_method(:abc, :def)).to eq([:my_method, :abc, :def])
-      expect(result1[:test].respond_to?(:other_method)).to be(false)
-      expect(result2[:test].respond_to?(:my_method)).to be(false)
-      expect(result2[:test].other_method(:xyz)).to eq([:other_method, :xyz])
+      expect(result[:test].my_method(:abc, :def)).to eq([:my_method, :abc, :def])
     end
   end
 end

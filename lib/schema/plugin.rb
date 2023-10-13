@@ -49,5 +49,21 @@ module Schema
       const_set(:InstanceDSL, mod)
       mod
     end
+
+    def self.helpers(&block)
+      return @helpers if defined?(@helpers)
+
+      @helpers = Module.new(&block)
+      const_set(:HelpersDSL, @helpers)
+      @helpers
+    end
+
+    def self.helpers_dsl
+      @helpers
+    end
+
+    class << self
+      alias helpers? helpers_dsl
+    end
   end
 end
